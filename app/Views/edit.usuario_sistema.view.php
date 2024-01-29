@@ -18,40 +18,50 @@
                             <p class="text-danger"><?php echo isset($errores['nombre']) ? $errores['nombre'] : ''; ?></p>
                         </div>
                         <div class="mb-3 col-sm-6">
-                            <label for="pass">Contraseña</label>
-                            <input class="form-control" id="pass" type="password" name="pass" placeholder="Sin modificar" value="">
-                            <p class="text-danger"><?php echo isset($errores['pass']) ? $errores['pass'] : ''; ?></p>
-                        </div>
-                        <div class="mb-3 col-sm-6">
                             <label for="email">Email</label>
                             <input class="form-control" id="email" type="email" name="email" placeholder="miemail@dominio.org" value="<?php echo isset($input['email']) ? $input['email'] : ''; ?>">
                             <p class="text-danger"><?php echo isset($errores['email']) ? $errores['email'] : ''; ?></p>
                         </div>
-                        <div class="mb-3 col-sm-4">
+                        <div class="mb-3 col-sm-6">
                             <label for="id_rol">Rol del usuario</label>
                             <select class="form-control select2-container--default" name="id_rol">
+                                <option value="">-</option>
                                 <?php
-                                if (count($roles) > 0) {
-                                    foreach ($roles as $r) {
-                                        ?>
-                                        <option value="<?php echo $r['id_rol'] ?>" <?php echo (isset($input['id_rol']) && $input['id_rol'] == $r['id_rol']) ? 'selected' : ''; ?>><?php echo $r['id_rol'] . ': ' . $r['nombre_rol'] ?></option>
-                                        <?php
-                                    }
+                                foreach ($roles as $r) {
+                                    ?>
+                                    <option value="<?php echo $r['id_rol'] ?>" <?php echo (isset($input['id_rol']) && $input['id_rol'] == $r['id_rol']) ? 'selected' : ''; ?>><?php echo $r['nombre_rol'] ?></option>
+                                    <?php
                                 }
                                 ?>
                             </select>
                             <p class="text-danger"><?php echo isset($errores['id_rol']) ? $errores['id_rol'] : ''; ?></p>
                         </div>
-                        <div class="mb-3 col-sm-2">
+                        <div class="mb-3 col-sm-6">
                             <label for="idioma">Idioma</label>
-                            <select class="form-control" name="idioma">                                
-                                <option value="es" <?php echo (isset($input['idioma']) && $input['idioma'] == 'es') ? 'selected' : '';?>>Español</option>
-                                <option value="gl <?php echo (isset($input['idioma']) && $input['idioma'] == 'gl') ? 'selected' : '';?>">Galego</option>                                
-                                <option value="en" <?php echo (isset($input['idioma']) && $input['idioma'] == 'en') ? 'selected' : '';?>>Inglés</option>                                
-                                
+                            <select class="form-control" name="idioma">      
+                                <option value="">-</option>
+                                <?php
+                                foreach($idiomas as $idioma){
+                                    ?>
+                                <option value="<?php echo $idioma['id_idioma']; ?>" <?php echo isset($input['idioma']) && $input['idioma'] == $idioma['id_idioma'] ? 'selected' : ''; ?> ><?php echo $idioma['nombre_idioma']; ?></option>
+                                <?php
+                                }
+                                ?>
                             </select>
                             <p class="text-danger"><?php echo isset($errores['idioma']) ? $errores['idioma'] : ''; ?></p>
                         </div>
+                        <div class="mb-3 col-sm-6">
+                            <label for="pass">Contraseña</label>
+                            <input class="form-control" id="pass" type="password" name="pass" placeholder="Sin modificar" value="">
+                            <p class="text-danger"><?php echo isset($errores['pass']) ? $errores['pass'] : ''; ?></p>
+                        </div>
+                        <div class="mb-3 col-sm-6">
+                            <label for="pass">Confirmar contraseña</label>
+                            <input class="form-control" id="pass2" type="password" name="pass2" placeholder="Sin modificar" value="">
+                            <p class="text-danger"><?php echo isset($errores['pass2']) ? $errores['pass2'] : ''; ?></p>
+                        </div>
+                        
+                        
                         <div class="col-12 text-right">                            
                             <input type="submit" value="Enviar" name="enviar" class="btn btn-primary"/>
                             <a href="/usuarios-sistema" class="btn btn-danger ml-3">Cancelar</a>                            
