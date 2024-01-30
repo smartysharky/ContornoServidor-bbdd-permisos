@@ -11,4 +11,15 @@ class AuxIdiomasModel extends \Com\Daw2\Core\BaseModel{
         return $stmt->fetchAll();
     }
     
+    function loadIdioma(int $idIdioma) : ?array{
+        $stmt = $this->pdo->prepare('SELECT * FROM aux_idiomas WHERE id_idioma = ?');
+        $stmt->execute([$idIdioma]);
+        if($row = $stmt->fetch()){
+            return $row;
+        }
+        else {
+            return null;
+        }
+    }
+    
 }

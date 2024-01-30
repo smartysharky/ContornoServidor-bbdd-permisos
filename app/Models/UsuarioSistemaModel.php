@@ -11,4 +11,27 @@ class UsuarioSistemaModel extends \Com\Daw2\Core\BaseModel {
     function getAll() : array{
         return $this->pdo->query(self::SELECT_FROM)->fetchAll();
     }
+    
+    /**
+     * 
+     * @param array $data 
+     * @return int 0 si hay algún error. El id autogenerado en caso de éxito.
+     */
+    function insertUsuarioSistema(array $data) : int{
+        $query = "INSERT INTO usuario_sistema (id_rol, email, pass, nombre, id_idioma) VALUES(:id_rol, :email, :pass, :nombre, :id_idioma)";
+        $stmt = $this->pdo->prepare($query);
+        $vars = [
+            'id_rol' => $data['id_rol'],
+            'email' => $data['email'],
+            'pass' => password_hash($data['pass'], PASSWORD_DEFAULT),
+            'nombre' => $data['nombre'],
+            'id_idioma' => $data['id_idioma']
+        ];
+        if($stmt->execute[$vars]){
+            return $stmt->lastInsertId();
+        }
+        else{
+            return 0;
+        }
+    }
 }

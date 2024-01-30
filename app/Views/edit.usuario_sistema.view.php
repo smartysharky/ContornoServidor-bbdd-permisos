@@ -29,7 +29,7 @@
                                 <?php
                                 foreach ($roles as $r) {
                                     ?>
-                                    <option value="<?php echo $r['id_rol'] ?>" <?php echo (isset($input['id_rol']) && $input['id_rol'] == $r['id_rol']) ? 'selected' : ''; ?>><?php echo $r['nombre_rol'] ?></option>
+                                    <option value="<?php echo $r['id_rol'] ?>" <?php echo (isset($input['id_rol']) && $input['id_rol'] == $r['id_rol']) ? 'selected' : ''; ?>><?php echo ucfirst($r['nombre_rol']) ?></option>
                                     <?php
                                 }
                                 ?>
@@ -38,7 +38,7 @@
                         </div>
                         <div class="mb-3 col-sm-6">
                             <label for="idioma">Idioma</label>
-                            <select class="form-control" name="idioma">      
+                            <select class="form-control" name="id_idioma">      
                                 <option value="">-</option>
                                 <?php
                                 foreach($idiomas as $idioma){
