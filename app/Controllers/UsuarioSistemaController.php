@@ -39,7 +39,7 @@ class UsuarioSistemaController extends \Com\Daw2\Core\BaseController {
             $model = new \Com\Daw2\Models\UsuarioSistemaModel();
             $id = $model->insertUsuarioSistema($_POST);
             if($id > 0){
-                header()
+                header();
             }
         }
     }
