@@ -27,11 +27,24 @@ class UsuarioSistemaModel extends \Com\Daw2\Core\BaseModel {
             'nombre' => $data['nombre'],
             'id_idioma' => $data['id_idioma']
         ];
-        if($stmt->execute[$vars]){
-            return $stmt->lastInsertId();
+        if($stmt->execute($vars)){            
+            return (int)$this->pdo->lastInsertId();
         }
         else{
             return 0;
         }
+    }
+    
+    function loadByEmail(string $email) : ?array{
+        $query = "SELECT * FROM usuario_sistema WHERE email = ?";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute([$email]);
+        if($row = $stmt->fetch()){
+            return $row;
+        }
+        else{
+            return null;
+        }
+                
     }
 }
