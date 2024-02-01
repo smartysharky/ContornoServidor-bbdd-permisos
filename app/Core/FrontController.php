@@ -202,6 +202,20 @@ class FrontController {
                     $controlador->processAdd();
                 }
                 , 'post');
+                
+         Route::add('/usuarios-sistema/edit/([0-9]+)',
+                function ($id) {
+                    $controlador = new \Com\Daw2\Controllers\UsuarioSistemaController();
+                    $controlador->mostrarEdit((int)$id);
+                }
+                , 'get');
+                
+        Route::add('/usuarios-sistema/edit/([0-9]+)',
+                function ($id) {
+                    $controlador = new \Com\Daw2\Controllers\UsuarioSistemaController();
+                    $controlador->processEdit((int)$id);
+                }
+                , 'post');
 
 
         Route::pathNotFound(

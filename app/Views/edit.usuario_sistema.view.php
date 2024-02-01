@@ -9,7 +9,7 @@
             </div>
             <!-- Card Body -->
             <div class="card-body">
-                <form action="<?php echo $seccion; ?>" method="post">         
+                <form action="" method="post">         
                     <!--form method="get"-->
                     <div class="row">
                         <div class="mb-3 col-sm-6">
@@ -43,7 +43,7 @@
                                 <?php
                                 foreach($idiomas as $idioma){
                                     ?>
-                                <option value="<?php echo $idioma['id_idioma']; ?>" <?php echo isset($input['idioma']) && $input['idioma'] == $idioma['id_idioma'] ? 'selected' : ''; ?> ><?php echo $idioma['nombre_idioma']; ?></option>
+                                <option value="<?php echo $idioma['id_idioma']; ?>" <?php echo isset($input['id_idioma']) && $input['id_idioma'] == $idioma['id_idioma'] ? 'selected' : ''; ?> ><?php echo $idioma['nombre_idioma']; ?></option>
                                 <?php
                                 }
                                 ?>
