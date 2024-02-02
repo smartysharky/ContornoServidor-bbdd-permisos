@@ -67,6 +67,20 @@ class UsuarioSistemaModel extends \Com\Daw2\Core\BaseModel {
         }                
     }
     
+    function delete(int $id) : bool{
+        $query = "DELETE FROM usuario_sistema WHERE id_usuario = ?";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute([$id]);
+        return $stmt->rowCount() > 0;               
+    }
+    
+    function baja(int $id, int $estado) : bool{
+        $query = "UPDATE usuario_sistema SET baja=? WHERE id_usuario = ?";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute([$estado, $id]);
+        return $stmt->rowCount() > 0;               
+    }
+    
     function loadByEmailNotId(string $email, int $id) : ?array{
         $query = "SELECT * FROM usuario_sistema WHERE email = ? AND id_usuario != ?";
         $stmt = $this->pdo->prepare($query);

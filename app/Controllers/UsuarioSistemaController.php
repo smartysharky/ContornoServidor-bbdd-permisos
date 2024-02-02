@@ -13,7 +13,12 @@ class UsuarioSistemaController extends \Com\Daw2\Core\BaseController {
         $data['seccion'] = '/usuarios-sistema';
         
         $modelo = new \Com\Daw2\Models\UsuarioSistemaModel();
-        $data['usuarios'] = $modelo->getAll();                
+        $data['usuarios'] = $modelo->getAll(); 
+        
+        if(isset($_SESSION['mensaje'])){
+            $data['mensaje'] = $_SESSION['mensaje'];
+            unset($_SESSION['mensaje']);
+        }
         
         $this->view->showViews(array('templates/header.view.php', 'usuario_sistema.view.php', 'templates/footer.view.php'), $data);
     }  
@@ -112,6 +117,53 @@ class UsuarioSistemaController extends \Com\Daw2\Core\BaseController {
         $data['errores'] = $errores;
         
         $this->view->showViews(array('templates/header.view.php', 'edit.usuario_sistema.view.php', 'templates/footer.view.php'), $data);
+    }
+    
+    function processDelete(int $id) : void{
+        $model = new \Com\Daw2\Models\UsuarioSistemaModel();
+        if(!$model->delete($id)){
+            $mensaje = [];
+            $mensaje['class'] = 'danger';
+            $mensaje['texto'] = 'No se ha podido borrar al usuario.';
+        }
+        else{
+            $mensaje = [];
+            $mensaje['class'] = 'success';
+            $mensaje['texto'] = 'Usuario eliminado con éxito.';
+        }
+        $_SESSION['mensaje'] = $mensaje;
+        header('location: /usuarios-sistema');
+    }
+    
+    
+    function processBaja(int $id) : void{
+        $model = new \Com\Daw2\Models\UsuarioSistemaModel();
+        $usuarioActual = $model->loadUsuarioSistema($id);
+        if(!is_null($usuarioActual)){
+            if($usuarioActual['baja'] == 0){
+                $baja = 1;                
+            }
+            else{
+                $baja = 0;
+            }
+            if(!$model->baja($id, $baja)){
+                $mensaje = [];
+                $mensaje['class'] = 'danger';
+                $mensaje['texto'] = 'No se ha podido cambiar el estado del usuario.';
+            }
+            else{
+                $mensaje = [];
+                $mensaje['class'] = 'success';
+                $mensaje['texto'] = 'Estado cambiado con éxito.';
+            }
+        }
+        else{
+            $mensaje = [];
+            $mensaje['class'] = 'warning';
+            $mensaje['texto'] = 'El usuario seleccionado no existe.';
+        }
+        $_SESSION['mensaje'] = $mensaje;
+        header('location: /usuarios-sistema');
     }
     
     private function checkComunForm(array $data) : array{

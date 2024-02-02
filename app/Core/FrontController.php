@@ -216,6 +216,20 @@ class FrontController {
                     $controlador->processEdit((int)$id);
                 }
                 , 'post');
+                        
+       Route::add('/usuarios-sistema/delete/([0-9]+)',
+                function ($id) {
+                    $controlador = new \Com\Daw2\Controllers\UsuarioSistemaController();
+                    $controlador->processDelete((int)$id);
+                }
+                , 'get');                      
+                
+        Route::add('/usuarios-sistema/baja/([0-9]+)',
+                function ($id) {
+                    $controlador = new \Com\Daw2\Controllers\UsuarioSistemaController();
+                    $controlador->processBaja((int)$id);
+                }
+                , 'get');
 
 
         Route::pathNotFound(

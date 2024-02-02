@@ -1,4 +1,15 @@
-<div class="row">           
+<div class="row">  
+    <?php 
+    if(isset($mensaje)){
+    ?>
+    <div class="col-12">
+        <div class="alert alert-<?php echo $mensaje['class']; ?>">
+            <p><?php echo $mensaje['texto']; ?></p>
+        </div>
+    </div>
+    <?php
+    }
+    ?>
     <div class="col-12">
         <div class="card shadow mb-4">
             <div
@@ -34,7 +45,7 @@
                         <?php
                         foreach($usuarios as $u){
                         ?>
-                        <tr class="<?php #echo $p['pais'] != 'España' ? 'table-warning' :  ''; ?>">
+                        <tr class="<?php echo $u['baja'] ? 'table-danger' : ''; ?>">
                             <td><?php echo $u['nombre']; ?></td>
                             <td><a href="mailto: <?php echo $u['email']; ?>"><?php echo $u['email']; ?></a></td>
                             <td><?php echo $u['nombre_rol']; ?></td>                            
@@ -43,6 +54,7 @@
                             <td>                              
                                 <a href="/usuarios-sistema/view/<?php echo $u['id_usuario']; ?>" class="btn btn-default ml-1"><i class="fas fa-eye"></i></a>
                                 <a href="/usuarios-sistema/edit/<?php echo $u['id_usuario']; ?>" class="btn btn-success ml-1"><i class="fas fa-edit"></i></a>
+                                <a href="/usuarios-sistema/baja/<?php echo $u['id_usuario']; ?>" class="btn btn-warning ml-1"><i class="fas fa-toggle-<?php echo $u['baja'] ? 'off' : 'on'; ?>"></i></a>
                                 <a href="/usuarios-sistema/delete/<?php echo $u['id_usuario']; ?>" class="btn btn-danger ml-1"><i class="fas fa-trash"></i></a>
                             </td>
 
