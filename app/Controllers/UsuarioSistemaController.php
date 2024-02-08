@@ -6,6 +6,12 @@ namespace Com\Daw2\Controllers;
 
 class UsuarioSistemaController extends \Com\Daw2\Core\BaseController {
 
+    private const ROL_ADMIN = 1;
+    private const ROL_PRODUCTOS = 2;
+    private const ROL_CATEGORIAS = 3;
+    private const ROL_PROVEEDOR = 4;
+    private const ROL_AUDITOR = 5;
+
     function mostrarLogin() {
         $this->view->show("login.view.php");
     }
@@ -22,13 +28,17 @@ class UsuarioSistemaController extends \Com\Daw2\Core\BaseController {
             if (!is_null($usuario)) {
                 if (password_verify($pass, $usuario["pass"])) {
                     unset($usuario["pass"]);
+
                     $_SESSION["usuario"] = $usuario;
+                    $_SESSION["permisos"] = $this->getPermisos($usuario["id_rol"]);
+
                     $modelo->updateLogin($usuario["id_usuario"]);
+
                     header("location: /");
                 } else {
                     $errores["pass"] = "Datos de acceso incorrectos";
                 }
-            }else{
+            } else {
                 $errores["pass"] = "Datos de acceso incorrectos";
             }
         }
@@ -40,6 +50,44 @@ class UsuarioSistemaController extends \Com\Daw2\Core\BaseController {
         $this->view->show("login.view.php", $data);
     }
 
+    private function getPermisos(int $idRol): array {
+        $permisos = [
+            'usuarios_sistema' => '',
+            'categorias' => '',
+            'productos' => '',
+            'proveedores' => ''
+        ];
+
+        switch ($idRol) {
+
+            case self::ROL_ADMIN:
+                foreach ($permisos as $zona => $perm) {
+                    $permisos[$zona] = 'rwd';
+                }
+                break;
+
+            case self::ROL_AUDITOR:
+                foreach ($permisos as $zona => $perm) {
+                    $permisos[$zona] = 'r';
+                }
+                break;
+
+            case self::ROL_PRODUCTOS:
+                $permisos['productos'] = 'rwd';
+                break;
+
+            case self::ROL_CATEGORIAS:
+                $permisos["categorias"] = 'rwd';
+                break;
+
+            case self::ROL_PROVEEDOR:
+                $permisos["proveedores"] = 'rwd';
+                break;
+        }
+
+        return $permisos;
+    }
+
     function checkLogin(array $data): array {
         $errores = [];
         if (empty($data["email"])) {
@@ -49,6 +97,11 @@ class UsuarioSistemaController extends \Com\Daw2\Core\BaseController {
             $errores["pass"] = "Introduzca una contraseña";
         }
         return $errores;
+    }
+
+    function procesarLogOut() {
+        session_destroy();
+        header("location: /");
     }
 
     function mostrarTodos() {
@@ -65,6 +118,31 @@ class UsuarioSistemaController extends \Com\Daw2\Core\BaseController {
         }
 
         $this->view->showViews(array('templates/header.view.php', 'usuario_sistema.view.php', 'templates/footer.view.php'), $data);
+    }
+    
+    function mostrarView(int $id){
+        $data = [];
+        $data['titulo'] = 'Datos usuario';
+        $data['seccion'] = '/usuarios-sistema/view';
+        $data['tituloDiv'] = 'Datos usuario';
+                
+        $rolModel = new \Com\Daw2\Models\AuxRolModel();
+        $data['roles'] = $rolModel->getAll();
+        
+        $idiomaModel = new \Com\Daw2\Models\AuxIdiomasModel();
+        $data['idiomas'] = $idiomaModel->getAll();
+        
+        $usuarioModel = new \Com\Daw2\Models\UsuarioSistemaModel();
+        $data['input'] = $usuarioModel->loadUsuarioSistema($id);
+        
+        $data['readonly'] = true;
+        
+        if(!is_null($data['input'])){
+            $this->view->showViews(array('templates/header.view.php', 'edit.usuario_sistema.view.php', 'templates/footer.view.php'), $data);
+        }
+        else{            
+            header('location: /usuarios-sistema');
+        }
     }
 
     function mostrarAdd(): void {
@@ -162,15 +240,23 @@ class UsuarioSistemaController extends \Com\Daw2\Core\BaseController {
 
     function processDelete(int $id): void {
         $model = new \Com\Daw2\Models\UsuarioSistemaModel();
-        if (!$model->delete($id)) {
-            $mensaje = [];
-            $mensaje['class'] = 'danger';
-            $mensaje['texto'] = 'No se ha podido borrar al usuario.';
+
+        if ($_SESSION["usuario"]["id_usuario"] != $id) {
+            if (!$model->delete($id)) {
+                $mensaje = [];
+                $mensaje['class'] = 'danger';
+                $mensaje['texto'] = 'No se ha podido borrar al usuario.';
+            } else {
+                $mensaje = [];
+                $mensaje['class'] = 'success';
+                $mensaje['texto'] = 'Usuario eliminado con éxito.';
+            }
         } else {
             $mensaje = [];
-            $mensaje['class'] = 'success';
-            $mensaje['texto'] = 'Usuario eliminado con éxito.';
+            $mensaje['class'] = 'danger';
+            $mensaje['texto'] = 'No se puede borrar a uno mismo';
         }
+
         $_SESSION['mensaje'] = $mensaje;
         header('location: /usuarios-sistema');
     }
@@ -178,26 +264,34 @@ class UsuarioSistemaController extends \Com\Daw2\Core\BaseController {
     function processBaja(int $id): void {
         $model = new \Com\Daw2\Models\UsuarioSistemaModel();
         $usuarioActual = $model->loadUsuarioSistema($id);
-        if (!is_null($usuarioActual)) {
-            if ($usuarioActual['baja'] == 0) {
-                $baja = 1;
+        
+        if($_SESSION["usuario"]["id_usuario"] != $id){
+            if (!is_null($usuarioActual)) {
+                if ($usuarioActual['baja'] == 0) {
+                    $baja = 1;
+                } else {
+                    $baja = 0;
+                }
+                if (!$model->baja($id, $baja)) {
+                    $mensaje = [];
+                    $mensaje['class'] = 'danger';
+                    $mensaje['texto'] = 'No se ha podido cambiar el estado del usuario.';
+                } else {
+                    $mensaje = [];
+                    $mensaje['class'] = 'success';
+                    $mensaje['texto'] = 'Estado cambiado con éxito.';
+                }
             } else {
-                $baja = 0;
-            }
-            if (!$model->baja($id, $baja)) {
                 $mensaje = [];
-                $mensaje['class'] = 'danger';
-                $mensaje['texto'] = 'No se ha podido cambiar el estado del usuario.';
-            } else {
-                $mensaje = [];
-                $mensaje['class'] = 'success';
-                $mensaje['texto'] = 'Estado cambiado con éxito.';
+                $mensaje['class'] = 'warning';
+                $mensaje['texto'] = 'El usuario seleccionado no existe.';
             }
-        } else {
+        }else {
             $mensaje = [];
-            $mensaje['class'] = 'warning';
-            $mensaje['texto'] = 'El usuario seleccionado no existe.';
+            $mensaje['class'] = 'danger';
+            $mensaje['texto'] = 'No se puede dar de baja a uno mismo';
         }
+        
         $_SESSION['mensaje'] = $mensaje;
         header('location: /usuarios-sistema');
     }

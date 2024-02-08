@@ -63,7 +63,6 @@
           } else {
               ?>
             <i class="text-blue fas fa-sign-in-alt"></i> 
-
             <?php
           }
           ?>
